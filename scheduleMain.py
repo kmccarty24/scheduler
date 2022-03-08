@@ -1,58 +1,39 @@
 #%%
 # import tkinter as tk
+from psychopy import visual, event, core
 import time
-import pandas as pd
-from threading import Thread
+# import pandas as pd
 
+def startTime():
+    return time.strftime("%a %b %d %H:%M:%S %Y", time.localtime())
 
-#%% 
-class ClockStream:
+def getTime():
+    return time.strftime("%H:%M", time.localtime())
 
-    def __init__(self, src=0):
-        '''initalise the clock'''
-        self.restart = False
-        self.stopped = False
-        self.timeNow = None
-    
-    def start(self):
+def endTime():
+    return time.strftime("%a %b %d %H:%M:%S %Y", time.localtime()) 
 
-        Thread(target=self.getTime, args=()).start()
-        
-        # now return the current time as a formatted string of hh:mm
-        return time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())  # e.g., 'Thu, weds 28 Jun 2001 14:17:15'
-
-    def stop(self):
-        '''indicate that the thread should be stopped, close the stream
-        and return the duration of the programme formatted as a string'''
-
-        self.stopped = True
-        self.duration = time.time() - self.startTime
-
-        return time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())  # e.g., 'Thu, weds 28 Jun 2001 14:17:15'
-
-
-
-    def getTime(self):
-        '''keep looping infinitely until the thread is stopped, get the time in a simple HH:MM format'''
-
-        # maybe only update if needed to save CPU time?
-
-        while True:
-            if self.stopped:
-                return
-            else:
-                # otherwise, read the time and save it as formatted as a string in timeNow
-                self.timeNow = time.strftime("%H:%M", time.localtime())  # e.g., '14:17'
-
-    def rtnTime(self):
-        return self.timeNow
-
-#%%
-myClock = ClockStream()
-
-startTime = myClock.start()  # init and start the clock whilst saving the full day time and date as a string in this variable
-
-#%%
-now = myClock.rtnTime()
-print(now)
 # %%
+
+win = visual.Window((1024, 768), fullscr=False, units='height', color='black')
+theTimeStim = visual.TextStim(win, color='white', height=0.03, pos=(0, 0.3), text='')
+circle = visual.Circle(win, edges=128, lineColor='blue', fillColor='blue', pos=(0, -0.2), radius=0.03)
+
+while True:
+
+    theTime = getTime()
+
+    if theTime != theTimeStim.text:
+        theTimeStim.text = theTime
+
+    keys = event.getKeys()
+    
+    if keys:
+        win.close()
+        core.quit()
+    
+    theTimeStim.draw()
+    circle.draw()
+    win.flip()
+    
+
